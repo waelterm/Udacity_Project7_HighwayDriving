@@ -51,8 +51,7 @@ int main() {
 		map_waypoints_dy.push_back(d_y);
 	}
 
-	int lane = 1;
-	double ref_vel = 49.5; //mph
+
 
 
 	h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s,
@@ -62,6 +61,8 @@ int main() {
 		// "42" at the start of the message means there's a websocket message event.
 		// The 4 signifies a websocket message
 		// The 2 signifies a websocket event
+		int lane = 1;
+		double ref_vel = 49.5; //mph
 		if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
 			auto s = hasData(data);
@@ -132,7 +133,7 @@ int main() {
 						ptsy.push_back(ref_y);
 					}
 
-					double next_d = car_d;
+					double next_d = 2+4*lane;
 					for (int i = 1; i < 4; ++i) {
 						double next_s = car_s + 30 * i;
 						vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
@@ -146,7 +147,7 @@ int main() {
 						double shift_x = ptsx[i] - ref_x;
 						double shift_y = ptsy[i] - ref_y;
 						ptsx[i] = (shift_x * cos(0 - ref_yaw) - shift_y * sin(0 - ref_yaw));
-						ptsy[i] = (shift_y * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
+						ptsy[i] = (shift_x * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
 					}
 
 					tk::spline s;
@@ -187,25 +188,6 @@ int main() {
 						next_x_vals.push_back(x_point);
 						next_y_vals.push_back(y_point);
 					}
-
-					vector<double> next_x_vals;
-					vector<double> next_y_vals;
-
-
-					double dist_inc = 0.4;
-					for (int i = 0; i < 50; ++i) {
-						//next_x_vals.push_back(car_x+(dist_inc*i)*cos(deg2rad(car_yaw)));
-						//next_y_vals.push_back(car_y+(dist_inc*i)*sin(deg2rad(car_yaw)));
-						double next_d = car_d;
-						double next_s = car_s + dist_inc * i;
-						vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-						next_x_vals.push_back(next_xy[0]);
-						next_y_vals.push_back(next_xy[1]);
-					}
-					/**
-					 * TODO: define a path made up of (x,y) points that the car will visit
-					 *   sequentially every .02 seconds
-					 */
 
 
 					msgJson["next_x"] = next_x_vals;
