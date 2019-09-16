@@ -92,7 +92,16 @@ int main() {
 
           vector<double> next_x_vals;
           vector<double> next_y_vals;
-
+          double dist_inc = 0.4;
+          for (int i = 0; i < 50; ++i) {
+            //next_x_vals.push_back(car_x+(dist_inc*i)*cos(deg2rad(car_yaw)));
+            //next_y_vals.push_back(car_y+(dist_inc*i)*sin(deg2rad(car_yaw)));
+            double next_d = car_d;
+            double next_s = car_s+dist_inc*i;
+            vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+            next_x_vals.push_back(next_xy[0]);
+            next_y_vals.push_back(next_xy[1]);
+          }
           /**
            * TODO: define a path made up of (x,y) points that the car will visit
            *   sequentially every .02 seconds
