@@ -102,7 +102,7 @@ int main() {
 					// Number of points in last suggested path
 					int prev_size = previous_path_x.size();
 
-					std::cout << "Number of points used:" << prev_size << std::endl;
+					//std::cout << "Number of points used:" << prev_size << std::endl;
 
 					if (prev_size > 0)
 					{
@@ -311,19 +311,42 @@ int main() {
 					vector<int> actions{ 1,-1,1,-1 };
 					int cntr = 0;
 					bool keep_going = true;
+					std::cout << "too_close: " << too_close << std::endl;
+					std::cout << "right_lane_speed_advantage: " << right_lane_speed_advantage << std::endl;
+					std::cout << "left_lane_speed_advantage: " << left_lane_speed_advantage << std::endl;
+					std::cout << "right_right_lane_speed_advantage: " << right_right_lane_speed_advantage << std::endl;
+					std::cout << "left_left_lane_speed_advantage: " << left_left_lane_speed_advantage << std::endl;
+					std::cout << "right_lane_is_safe: " << right_lane_is_safe << std::endl;
+					std::cout << "left_lane_is_safe: " << left_lane_is_safe << std::endl;
+					std::cout << "right_right_lane_is_safe: " << right_right_lane_is_safe << std::endl;
+					std::cout << "left_left_lane_is_safe " << left_left_lane_is_safe << std::endl;
+					std::cout << "right_lane_speed_advantage: " << right_lane_speed_advantage << std::endl;
+					std::cout << "left_lane_speed_advantage: " << left_lane_speed_advantage << std::endl;
+					std::cout << "right_right_lane_speed_advantage: " << right_right_lane_speed_advantage << std::endl;
+					
+
+
 
 					while (cntr < 4 && keep_going && too_close) {
 						int maxElementIndex = std::max_element(advantages.begin(), advantages.end()) - advantages.begin();
 						double advantage = advantages[maxElementIndex];
-						if (advantage > threshold && safe[maxElementIndex]) {
+						if (advantage > threshold && safe[maxElementIndex]) 
+						{
 							lane += actions[maxElementIndex];
 							keep_going = false;
 						}
-						else if (advantage < threshold) {
+						else if (advantage < threshold) 
+						{
 							keep_going = false;
+						}
+						else 
+						{
+							advantages[maxElementIndex] = 0;
 						}
 						++cntr;
 					}
+					std::cout << "lane " << lane << std::endl;
+					std::cout << std::endl;
 
 					//double error = desired_vel - car_speed;
 					//double time = (50 - prev_size) * 0.02;
@@ -363,7 +386,7 @@ int main() {
 					}
 					prev_ref_accel = ref_accel;
 					//ref_vel = car_speed;
-					std::cout << "Current ref_vel vehicle Speed: " << ref_vel << std::endl;
+					//std::cout << "Current ref_vel vehicle Speed: " << ref_vel << std::endl;
 					// Vector of widely spaced waypoints
 
 					vector<double> ptsx;
