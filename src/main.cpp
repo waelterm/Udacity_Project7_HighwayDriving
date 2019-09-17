@@ -151,7 +151,7 @@ int main() {
 					double max_jerk = 9.5;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 
-					if (desired_vel-car_speed >2)
+					if (desired_vel-(ref_vel*2.24) >2)
 					{ //accelerate
 						ref_accel = prev_ref_accel + max_jerk * 0.02;
 						if (ref_accel > 9.5)
@@ -159,7 +159,7 @@ int main() {
 							ref_accel = 9.5;
 						}
 					}
-					else if (desired_vel - car_speed < -2)
+					else if (desired_vel - (ref_vel*2.24) < -2)
 					{ //decellerate
 						ref_accel = prev_ref_accel - max_jerk * 0.02;
 						if (ref_accel < - 9.5)
@@ -246,13 +246,13 @@ int main() {
 					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
 					{
 						ref_vel = ref_vel + ref_accel * 0.02*i;
-						if (ref_accel > 0 && ref_vel > desired_vel)
+						if (ref_accel > 0 && ref_vel > (desired_vel/2.24))
 						{
-							ref_vel = desired_vel;
+							ref_vel = (desired_vel/2.24);
 						}
-						else if (ref_accel < 0 && ref_vel < desired_vel)
+						else if (ref_accel < 0 && ref_vel < (desired_vel/2.24))
 						{
-							ref_vel = desired_vel;
+							ref_vel = (desired_vel/2.24);
 						}
 
 						double N = (target_dist / (0.02 * ref_vel)); // 2.2f turn mph to mps
