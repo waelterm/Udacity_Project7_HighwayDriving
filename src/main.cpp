@@ -110,7 +110,16 @@ int main() {
 					}
 
 					bool too_close = false;
+					double speed_loss;
+					bool right_lane_is_safe = true;
+					bool right_right_lane_is_safe = true;
+					bool left_lane_is_safe = true;
+					bool left_left_lane_is_safe = true;
 
+					double right_lane_speed_advantage = 9999.0;
+					double right_right_lane_speed_advantage = 9999.0;
+					double left_lane_speed_advantage = 9999.0;
+					double left_left_lane_speed_advantage = 9999.0;
 					// fid ref_v to use
 					for (int i = 0; i < sensor_fusion.size(); ++i)
 					{
@@ -131,10 +140,191 @@ int main() {
 								double prel_desired_vel = check_speed - (check_speed / 10 ) * (10 - delta_s); //mph
 								if (prel_desired_vel < desired_vel) {
 									desired_vel = prel_desired_vel;
+									too_close = true;
+									speed_loss = 49.5 - desired_vel;
 								}
+							}
+						}// Checking right lane
+
+
+						 // if lane == 0
+						if (lane == 0) {
+							left_lane_is_safe = false;
+							left_left_lane_is_safe = false;
+							//CHECK RIGHT LANE
+							if (d < (2 + 4 * lane + 1 + 2) && d >(2 + 4 * lane + 1 - 2))
+							{
+								double vx = sensor_fusion[i][3];
+								double vy = sensor_fusion[i][4];
+								double check_speed = sqrt(vx * vx + vy * vy);
+								double check_car_s = sensor_fusion[i][5];
+								check_car_s += ((double)prev_size * 0.02 * check_speed);
+								double delta_s = check_car_s - car_s;
+								double delta_v = check_speed / 2.24 - ref_vel; //mps
+								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+								{
+									right_lane_is_safe = false;
+									right_right_lane_is_safe = false;
+								}
+								double speed_advantage;
+								if (delta_s > 0 && delta_v < 0) {
+									speed_advantage = delta_s / -delta_v;
+								}
+								else if (delta_s > 0) {
+									speed_advantage = delta_s * 100;
+								}
+								if (speed_advantage < right_lane_speed_advantage)
+									right_lane_speed_advantage = speed_advantage;
+							}
+							//CHECK RIGHT RIGHT LANE
+							if (d < (2 + 4 * lane + 2 + 2) && d >(2 + 4 * lane + 2 - 2))
+							{
+								double vx = sensor_fusion[i][3];
+								double vy = sensor_fusion[i][4];
+								double check_speed = sqrt(vx * vx + vy * vy);
+								double check_car_s = sensor_fusion[i][5];
+								check_car_s += ((double)prev_size * 0.02 * check_speed);
+								double delta_s = check_car_s - car_s;
+								double delta_v = check_speed / 2.24 - ref_vel; //mps
+								if (delta_s < 10 && delta_v > 0 && (6 * delta_v) > (delta_s + 20)) // 6 seconds for two lane changes and 2*10 meters buffer
+									right_right_lane_is_safe = false;
+								double speed_advantage;
+								if (delta_s > 0 && delta_v < 0) {
+									speed_advantage = 0.5*delta_s / -delta_v;
+								}
+								else if (delta_s > 0) {
+									speed_advantage = delta_s * 50;
+								}
+								if (speed_advantage < right_right_lane_speed_advantage)
+									right_right_lane_speed_advantage = speed_advantage;
+							}
+
+						}
+
+						else if(lane == 1) 
+						{
+							right_right_lane_is_safe = false;
+							left_left_lane_is_safe = false;
+							//CHECK RIGHT LANE
+							if (d < (2 + 4 * lane + 1 + 2) && d >(2 + 4 * lane + 1 - 2))
+							{
+								double vx = sensor_fusion[i][3];
+								double vy = sensor_fusion[i][4];
+								double check_speed = sqrt(vx * vx + vy * vy);
+								double check_car_s = sensor_fusion[i][5];
+								check_car_s += ((double)prev_size * 0.02 * check_speed);
+								double delta_s = check_car_s - car_s;
+								double delta_v = check_speed/2.24 - ref_vel; //mps
+								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+									right_lane_is_safe = false;
+								double speed_advantage;
+								if (delta_s > 0 && delta_v < 0) {
+									speed_advantage = delta_s / -delta_v;
+								}
+								else if (delta_s > 0) {
+									speed_advantage = delta_s * 100;
+								}
+								if (speed_advantage < right_lane_speed_advantage)
+									right_lane_speed_advantage = speed_advantage;
+							}
+							//CHECK LEFT LANE
+							if (d < (2 + 4 * lane - 1 + 2) && d >(2 + 4 * lane - 1 - 2))
+							{
+								double vx = sensor_fusion[i][3];
+								double vy = sensor_fusion[i][4];
+								double check_speed = sqrt(vx * vx + vy * vy);
+								double check_car_s = sensor_fusion[i][5];
+								check_car_s += ((double)prev_size * 0.02 * check_speed);
+								double delta_s = check_car_s - car_s;
+								double delta_v = check_speed / 2.24 - ref_vel; //mps
+								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+									left_lane_is_safe = false;
+								double speed_advantage;
+								if (delta_s > 0 && delta_v < 0) {
+									speed_advantage = delta_s / -delta_v;
+								}
+								else if (delta_s > 0) {
+									speed_advantage = delta_s * 100;
+								}
+								if (speed_advantage < left_lane_speed_advantage)
+									left_lane_speed_advantage = speed_advantage;
+							}
+						}
+
+						else if (lane == 2) {
+							right_lane_is_safe = false;
+							right_right_lane_is_safe = false;
+							//CHECK LEFT LANE
+							if (d < (2 + 4 * lane - 1 + 2) && d >(2 + 4 * lane - 1 - 2))
+							{
+								double vx = sensor_fusion[i][3];
+								double vy = sensor_fusion[i][4];
+								double check_speed = sqrt(vx * vx + vy * vy);
+								double check_car_s = sensor_fusion[i][5];
+								check_car_s += ((double)prev_size * 0.02 * check_speed);
+								double delta_s = check_car_s - car_s;
+								double delta_v = check_speed / 2.24 - ref_vel; //mps
+								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+								{
+									left_lane_is_safe = false;
+									left_left_lane_is_safe = false;
+								}
+								double speed_advantage;
+								if (delta_s > 0 && delta_v < 0) {
+									speed_advantage = delta_s / -delta_v;
+								}
+								else if (delta_s > 0) {
+									speed_advantage = delta_s * 100;
+								}
+								if (speed_advantage < left_lane_speed_advantage)
+									left_lane_speed_advantage = speed_advantage;
+							}
+						
+							//CHECK LEFT LEFT LANE
+							if (d < (2 + 4 * lane - 2 + 2) && d >(2 + 4 * lane - 2 - 2))
+							{
+								double vx = sensor_fusion[i][3];
+								double vy = sensor_fusion[i][4];
+								double check_speed = sqrt(vx * vx + vy * vy);
+								double check_car_s = sensor_fusion[i][5];
+								check_car_s += ((double)prev_size * 0.02 * check_speed);
+								double delta_s = check_car_s - car_s;
+								double delta_v = check_speed / 2.24 - ref_vel; //mps
+								if (delta_s < 10 && delta_v > 0 && (6 * delta_v) > (delta_s + 20)) // 6 seconds for two lane changes and 2*10 meters buffer
+									right_right_lane_is_safe = false;
+								double speed_advantage;
+								if (delta_s > 0 && delta_v < 0) {
+									speed_advantage = 0.5*delta_s / -delta_v;
+								}
+								else if (delta_s > 0) {
+									speed_advantage = delta_s * 50;
+								}
+								if (speed_advantage < left_left_lane_speed_advantage)
+									left_left_lane_speed_advantage = speed_advantage;
 							}
 						}
 					}
+
+					double threshold = 200;
+					vector<double> advantages{ right_lane_speed_advantage, left_lane_speed_advantage, right_right_lane_speed_advantage, left_left_lane_speed_advantage };
+					vector<bool> safe{ right_lane_is_safe, left_lane_is_safe, right_right_lane_is_safe, left_left_lane_is_safe };
+					vector<int> actions{ 1,-1,1,-1 };
+					int cntr = 0;
+					bool keep_going = true;
+
+					while (cntr < 4 && keep_going && too_close) {
+						int maxElementIndex = std::max_element(advantages.begin(), advantages.end()) - advantages.begin();
+						double advantage = advantages[maxElementIndex];
+						if (advantage > threshold && safe[maxElementIndex]) {
+							lane += actions[maxElementIndex];
+							keep_going = false;
+						}
+						else if (advantage < threshold) {
+							keep_going = false;
+						}
+						++cntr;
+					}
+
 					//double error = desired_vel - car_speed;
 					//double time = (50 - prev_size) * 0.02;
 					//double differential = error / time;
