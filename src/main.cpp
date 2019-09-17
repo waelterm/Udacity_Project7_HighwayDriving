@@ -240,7 +240,7 @@ int main() {
 					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
 					{
 						ref_vel = ref_vel/2.24; //mph to mps
-						ref_vel = ref_vel + ref_accel * 0.02;
+						ref_vel = ref_vel + ref_accel * 0.02*i;
 						double N = (target_dist / (0.02 * ref_vel)); // 2.2f turn mph to mps
 						double x_point = x_add_on + (target_x) / N;
 						double y_point = s(x_point);
