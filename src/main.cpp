@@ -125,15 +125,12 @@ int main() {
 							check_car_s += ((double)prev_size * 0.02 * check_speed);
 
 							double delta_s = check_car_s - car_s;
-							if (delta_s > 0 && delta_s < 30)
-							{
-								//WORK
-								desired_vel = check_speed + 0.3*(-30 + delta_s); //mph
-								if (desired_vel > 49.5) {
-									desired_vel = 49.5;
-								}
 
+							desired_vel = check_speed - (check_speed / 30) * (30 - delta_s); //mph
+							if (desired_vel > 49.5) {
+								desired_vel = 49.5;
 							}
+
 						}
 					}
 					//double error = desired_vel - car_speed;
@@ -151,7 +148,7 @@ int main() {
 					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 
-					if (desired_vel-(ref_vel*2.24) >2)
+					if (desired_vel-(ref_vel*2.24) > 3)
 					{ //accelerate
 						ref_accel = prev_ref_accel + max_jerk * 0.02;
 						if (ref_accel > 8)
@@ -159,7 +156,7 @@ int main() {
 							ref_accel = 8;
 						}
 					}
-					else if (desired_vel - (ref_vel*2.24) < -2)
+					else if (desired_vel - (ref_vel*2.24) < -3)
 					{ //decellerate
 						ref_accel = prev_ref_accel - max_jerk * 0.02;
 						if (ref_accel < - 8)
