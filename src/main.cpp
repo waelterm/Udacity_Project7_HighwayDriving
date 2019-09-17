@@ -152,7 +152,7 @@ int main() {
 							left_lane_is_safe = false;
 							left_left_lane_is_safe = false;
 							//CHECK RIGHT LANE
-							if (d < (2 + 4 * lane + 1 + 2) && d >(2 + 4 * lane + 1 - 2))
+							if (d < (2 + 4 * (lane + 1) + 2) && d >(2 + 4 * (lane + 1) - 2))
 							{
 								double vx = sensor_fusion[i][3];
 								double vy = sensor_fusion[i][4];
@@ -177,7 +177,7 @@ int main() {
 									right_lane_speed_advantage = speed_advantage;
 							}
 							//CHECK RIGHT RIGHT LANE
-							if (d < (2 + 4 * lane + 2 + 2) && d >(2 + 4 * lane + 2 - 2))
+							if (d < (2 + 4 * (lane + 2) + 2) && d >(2 + 4 * (lane + 2) - 2))
 							{
 								double vx = sensor_fusion[i][3];
 								double vy = sensor_fusion[i][4];
@@ -206,7 +206,7 @@ int main() {
 							right_right_lane_is_safe = false;
 							left_left_lane_is_safe = false;
 							//CHECK RIGHT LANE
-							if (d < (2 + 4 * lane + 1 + 2) && d >(2 + 4 * lane + 1 - 2))
+							if (d < (2 + 4 * (lane + 1) + 2) && d >(2 + 4 * (lane + 1) - 2))
 							{
 								double vx = sensor_fusion[i][3];
 								double vy = sensor_fusion[i][4];
@@ -228,7 +228,7 @@ int main() {
 									right_lane_speed_advantage = speed_advantage;
 							}
 							//CHECK LEFT LANE
-							if (d < (2 + 4 * lane - 1 + 2) && d >(2 + 4 * lane - 1 - 2))
+							if (d < (2 + 4 * (lane - 1) + 2) && d >(2 + 4 * (lane - 1) - 2))
 							{
 								double vx = sensor_fusion[i][3];
 								double vy = sensor_fusion[i][4];
@@ -255,7 +255,7 @@ int main() {
 							right_lane_is_safe = false;
 							right_right_lane_is_safe = false;
 							//CHECK LEFT LANE
-							if (d < (2 + 4 * lane - 1 + 2) && d >(2 + 4 * lane - 1 - 2))
+							if (d < (2 + 4 * (lane - 1) + 2) && d >(2 + 4 * (lane - 1) - 2))
 							{
 								double vx = sensor_fusion[i][3];
 								double vy = sensor_fusion[i][4];
@@ -281,7 +281,7 @@ int main() {
 							}
 						
 							//CHECK LEFT LEFT LANE
-							if (d < (2 + 4 * lane - 2 + 2) && d >(2 + 4 * lane - 2 - 2))
+							if (d < (2 + 4 * (lane - 2) + 2) && d >(2 + 4 * (lane - 2) - 2))
 							{
 								double vx = sensor_fusion[i][3];
 								double vy = sensor_fusion[i][4];
