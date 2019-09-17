@@ -32,6 +32,9 @@ int main() {
 	std::ifstream in_map_(map_file_.c_str(), std::ifstream::in);
 
 	string line;
+	double integral_term = 0;
+	double ref_vel = 0;
+	double prev_ref_accel = 0;
 	while (getline(in_map_, line)) {
 		std::istringstream iss(line);
 		double x;
@@ -55,14 +58,14 @@ int main() {
 
 
 	h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s,
-		&map_waypoints_dx, &map_waypoints_dy]
+		&map_waypoints_dx, &map_waypoints_dy, &integral_term, &ref_vel, &prev_ref_accel]
 		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length,
 			uWS::OpCode opCode) {
 		// "42" at the start of the message means there's a websocket message event.
 		// The 4 signifies a websocket message
 		// The 2 signifies a websocket event
 		int lane = 1;
-		double ref_vel = 49.5; //mph
+		double desired_vel = 49.5; //mph
 		if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
 			auto s = hasData(data);
@@ -119,14 +122,52 @@ int main() {
 
 							check_car_s += ((double)prev_size * 0.02 * check_speed);
 
-							if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
+							double delta_s = check_car_s - car_s;
+							if (delta_s > 0 && delta_s < 30)
 							{
 								//WORK
-								ref_vel = 29.5; //mph
+								desired_vel = check_speed - 0.3*(30 + delta_s); //mph
 							}
 						}
 					}
+					//double error = desired_vel - car_speed;
+					double time = (50 - prev_size) * 0.02;
+					//double differential = error / time;
+					//integral_term += time * error;
+					//double kp = 0.9;
+					//double ki = 0.1;
+					//double kd = 0.01;
+					//double gain = 3;
+					
+					//double ref_accel = gain*(kp * error + ki*integral_term + kd*differential);
+					double ref_accel;
+					prev_ref_accel = ref_accel;
+					double max_jerk = 9.5;
+					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 
+					if (desired_vel-car_speed >2)
+					{ //accelerate
+						ref_accel = prev_ref_accel + time * 0.02;
+						if (ref_accel > 9.5)
+						{
+							ref_accel = 9.5;
+						}
+					}
+					else if (desired_vel - car_speed < -2)
+					{ //decellerate
+						ref_accel = prev_ref_accel - time * 0.02;
+						if (ref_accel < - 9.5)
+						{
+							ref_accel = -9.5;
+						}
+					}
+					else 
+					{
+						//Keep current speed
+						ref_accel = 0;
+					}
+					prev_ref_accel = ref_accel;
+					ref_vel = car_speed;
 					// Vector of widely spaced waypoints
 
 					vector<double> ptsx;
@@ -197,6 +238,8 @@ int main() {
 					double x_add_on = 0;
 					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
 					{
+						ref_vel /= 2.24; //mph to mps
+						ref_vel += ref_accel * 0.02;
 						double N = (target_dist / (0.02 * ref_vel / 2.24)); // 2.2f turn mph to mps
 						double x_point = x_add_on + (target_x) / N;
 						double y_point = s(x_point);
