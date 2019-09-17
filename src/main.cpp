@@ -102,6 +102,8 @@ int main() {
 					// Number of points in last suggested path
 					int prev_size = previous_path_x.size();
 
+					std::cout << "Number of points used:" << prev_size << std::endl;
+
 					if (prev_size > 0)
 					{
 						car_s = end_path_s;
@@ -127,6 +129,10 @@ int main() {
 							{
 								//WORK
 								desired_vel = check_speed + 0.3*(-30 + delta_s); //mph
+								if (desired_vel > 49.5) {
+									desired_vel = 49.5;
+								}
+
 							}
 						}
 					}
@@ -240,6 +246,15 @@ int main() {
 					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
 					{
 						ref_vel = ref_vel + ref_accel * 0.02*i;
+						if (ref_accel > 0 && ref_vel > desired_vel)
+						{
+							ref_vel = desired_vel;
+						}
+						else if (ref_accel < 0 && ref_vel < desired_vel)
+						{
+							ref_vel = desired_vel;
+						}
+
 						double N = (target_dist / (0.02 * ref_vel)); // 2.2f turn mph to mps
 						double x_point = x_add_on + (target_x) / N;
 						double y_point = s(x_point);
