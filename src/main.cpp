@@ -148,23 +148,23 @@ int main() {
 					//double ref_accel = gain*(kp * error + ki*integral_term + kd*differential);
 					double ref_accel;
 					prev_ref_accel = ref_accel;
-					double max_jerk = 9.5;
+					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 
 					if (desired_vel-(ref_vel*2.24) >2)
 					{ //accelerate
 						ref_accel = prev_ref_accel + max_jerk * 0.02;
-						if (ref_accel > 9.5)
+						if (ref_accel > 8)
 						{
-							ref_accel = 9.5;
+							ref_accel = 8;
 						}
 					}
 					else if (desired_vel - (ref_vel*2.24) < -2)
 					{ //decellerate
 						ref_accel = prev_ref_accel - max_jerk * 0.02;
-						if (ref_accel < - 9.5)
+						if (ref_accel < - 8)
 						{
-							ref_accel = -9.5;
+							ref_accel = -8;
 						}
 					}
 					else 
@@ -243,7 +243,7 @@ int main() {
 					double target_dist = sqrt(target_x * target_x) + target_y * target_y;
 
 					double x_add_on = 0;
-					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
+					for (int i = 1; i <= 5 - previous_path_x.size(); ++i)
 					{
 						ref_vel = ref_vel + ref_accel * 0.02*i;
 						if (ref_accel > 0 && ref_vel > (desired_vel/2.24))
