@@ -171,7 +171,7 @@ int main() {
 									speed_advantage = delta_s / -delta_v;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_s * 100;
+									speed_advantage = delta_v * 100;
 								}
 								if (speed_advantage < right_lane_speed_advantage)
 									right_lane_speed_advantage = speed_advantage;
@@ -193,7 +193,7 @@ int main() {
 									speed_advantage = 0.5*delta_s / -delta_v;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_s * 50;
+									speed_advantage = delta_v * 50;
 								}
 								if (speed_advantage < right_right_lane_speed_advantage)
 									right_right_lane_speed_advantage = speed_advantage;
@@ -222,7 +222,7 @@ int main() {
 									speed_advantage = delta_s / -delta_v;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_s * 100;
+									speed_advantage = delta_v * 100;
 								}
 								if (speed_advantage < right_lane_speed_advantage)
 									right_lane_speed_advantage = speed_advantage;
@@ -244,7 +244,7 @@ int main() {
 									speed_advantage = delta_s / -delta_v;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_s * 100;
+									speed_advantage = delta_v * 100;
 								}
 								if (speed_advantage < left_lane_speed_advantage)
 									left_lane_speed_advantage = speed_advantage;
@@ -274,7 +274,7 @@ int main() {
 									speed_advantage = delta_s / -delta_v;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_s * 100;
+									speed_advantage = delta_v * 100;
 								}
 								if (speed_advantage < left_lane_speed_advantage)
 									left_lane_speed_advantage = speed_advantage;
@@ -297,7 +297,7 @@ int main() {
 									speed_advantage = 0.5*delta_s / -delta_v;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_s * 50;
+									speed_advantage = delta_v * 50;
 								}
 								if (speed_advantage < left_left_lane_speed_advantage)
 									left_left_lane_speed_advantage = speed_advantage;
@@ -305,7 +305,7 @@ int main() {
 						}
 					}
 
-					double threshold = 200;
+					double threshold = 10;
 					vector<double> advantages{ right_lane_speed_advantage, left_lane_speed_advantage, right_right_lane_speed_advantage, left_left_lane_speed_advantage };
 					vector<bool> safe{ right_lane_is_safe, left_lane_is_safe, right_right_lane_is_safe, left_left_lane_is_safe };
 					vector<int> actions{ 1,-1,1,-1 };
