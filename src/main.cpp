@@ -126,12 +126,12 @@ int main() {
 							if (delta_s > 0 && delta_s < 30)
 							{
 								//WORK
-								desired_vel = check_speed - 0.3*(30 + delta_s); //mph
+								desired_vel = check_speed + 0.3*(-30 + delta_s); //mph
 							}
 						}
 					}
 					//double error = desired_vel - car_speed;
-					double time = (50 - prev_size) * 0.02;
+					//double time = (50 - prev_size) * 0.02;
 					//double differential = error / time;
 					//integral_term += time * error;
 					//double kp = 0.9;
@@ -147,7 +147,7 @@ int main() {
 
 					if (desired_vel-car_speed >2)
 					{ //accelerate
-						ref_accel = prev_ref_accel + time * 0.02;
+						ref_accel = prev_ref_accel + max_jerk * 0.02;
 						if (ref_accel > 9.5)
 						{
 							ref_accel = 9.5;
@@ -155,7 +155,7 @@ int main() {
 					}
 					else if (desired_vel - car_speed < -2)
 					{ //decellerate
-						ref_accel = prev_ref_accel - time * 0.02;
+						ref_accel = prev_ref_accel - max_jerk * 0.02;
 						if (ref_accel < - 9.5)
 						{
 							ref_accel = -9.5;
@@ -168,6 +168,7 @@ int main() {
 					}
 					prev_ref_accel = ref_accel;
 					ref_vel = car_speed;
+					std::cout << "Current vehicle Speed: " << ref_vel << std::endl;
 					// Vector of widely spaced waypoints
 
 					vector<double> ptsx;
@@ -238,9 +239,9 @@ int main() {
 					double x_add_on = 0;
 					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
 					{
-						ref_vel /= 2.24; //mph to mps
-						ref_vel += ref_accel * 0.02;
-						double N = (target_dist / (0.02 * ref_vel / 2.24)); // 2.2f turn mph to mps
+						ref_vel = ref_vel/2.24; //mph to mps
+						ref_vel = ref_vel + ref_accel * 0.02;
+						double N = (target_dist / (0.02 * ref_vel)); // 2.2f turn mph to mps
 						double x_point = x_add_on + (target_x) / N;
 						double y_point = s(x_point);
 
