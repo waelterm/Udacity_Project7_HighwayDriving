@@ -126,11 +126,13 @@ int main() {
 
 							double delta_s = check_car_s - car_s;
 
-							desired_vel = check_speed - (check_speed / 30) * (30 - delta_s); //mph
-							if (desired_vel > 49.5) {
-								desired_vel = 49.5;
+							if (delta_s > 0)
+							{
+								double prel_desired_vel = check_speed - (check_speed / 30) * (30 - delta_s); //mph
+								if (prel_desired_vel < desired_vel) {
+									desired_vel = prel_desired_vel;
+								}
 							}
-
 						}
 					}
 					//double error = desired_vel - car_speed;
