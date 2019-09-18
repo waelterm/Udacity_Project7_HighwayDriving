@@ -122,6 +122,7 @@ int main() {
 					double left_lane_speed_advantage = 9999.0;
 					double left_left_lane_speed_advantage = 9999.0;
 					// fid ref_v to use
+					double gap_size = 20;
 					for (int i = 0; i < sensor_fusion.size(); ++i)
 					{
 						float d = sensor_fusion[i][6];
