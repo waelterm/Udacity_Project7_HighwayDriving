@@ -163,7 +163,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel/2.24) ;
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
 								{
 									right_lane_is_safe = false;
 									right_right_lane_is_safe = false;
@@ -192,7 +192,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel/2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 6 seconds for two lane changes and 2*10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 40)) || (delta_s < 40 && delta_s > -40)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -226,7 +226,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
 									right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -254,7 +254,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
 									left_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -286,7 +286,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
 								{
 									left_lane_is_safe = false;
 									left_left_lane_is_safe = false;
@@ -318,7 +318,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 6 seconds for two lane changes and 2*10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 40)) || (delta_s < 40 && delta_s > -40)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -337,7 +337,7 @@ int main() {
 						}
 					}
 
-					double threshold = 5;
+					double threshold = 10;
 					vector<double> advantages{ right_lane_speed_advantage, left_lane_speed_advantage, right_right_lane_speed_advantage, left_left_lane_speed_advantage };
 					vector<bool> safe{ right_lane_is_safe, left_lane_is_safe, right_right_lane_is_safe, left_left_lane_is_safe };
 					vector<int> actions{ 1,-1,1,-1 };
@@ -366,7 +366,7 @@ int main() {
 							{
 								lane += actions[maxElementIndex];
 								keep_going = false;
-								no_lane_change_counter = 250; //disables lane changes for the next 5 seconds
+								no_lane_change_counter = 150; //disables lane changes for the next 5 seconds
 							}
 							else if (advantage < threshold) 
 							{
@@ -398,8 +398,8 @@ int main() {
 					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 					if (no_lane_change_counter != 0) {
-						max_accel *= (1 - no_lane_change_counter / 250.0);
-						max_jerk *= (1 - no_lane_change_counter / 250.0);
+						max_accel *= (1 - no_lane_change_counter / 150.0);
+						max_jerk *= (1 - no_lane_change_counter / 150.0);
 					}
 
 					if (desired_vel-(ref_vel*2.24) > 0)
