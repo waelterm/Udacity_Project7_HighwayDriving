@@ -36,6 +36,7 @@ int main() {
 	double ref_vel = 0;
 	double prev_ref_accel = 0;
 	int lane = 1;
+	int no_lane_change_counter = 250; // No lane change in the first 5 seconds
 	while (getline(in_map_, line)) {
 		std::istringstream iss(line);
 		double x;
@@ -59,7 +60,7 @@ int main() {
 
 
 	h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s,
-		&map_waypoints_dx, &map_waypoints_dy, &integral_term, &ref_vel, &lane, &prev_ref_accel]
+		&map_waypoints_dx, &map_waypoints_dy, &integral_term, &ref_vel, &lane, &prev_ref_accel, &no_lane_change_counter]
 		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length, 
 			uWS::OpCode opCode) {
 		// "42" at the start of the message means there's a websocket message event.
@@ -196,14 +197,14 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < right_right_lane_speed_advantage)
+										right_right_lane_speed_advantage = speed_advantage;
 
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 + desired_speed_difference * 50;
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < right_right_lane_speed_advantage)
+										right_right_lane_speed_advantage = speed_advantage;
 
 								}
 							}
@@ -258,14 +259,14 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = delta_s / (1-desired_speed_difference);
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < left_lane_speed_advantage)
+										left_lane_speed_advantage = speed_advantage;
 
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 + desired_speed_difference * 100;
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < left_lane_speed_advantage)
+										left_lane_speed_advantage = speed_advantage;
 								}
 
 							}
@@ -293,14 +294,14 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = delta_s / (1-desired_speed_difference);
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < left_lane_speed_advantage)
+										left_lane_speed_advantage = speed_advantage;
 
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 +desired_speed_difference * 100;
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < left_lane_speed_advantage)
+										left_lane_speed_advantage = speed_advantage;
 
 								}
 
@@ -322,14 +323,14 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < left_left_lane_speed_advantage)
+										left_left_lane_speed_advantage = speed_advantage;
 
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 + desired_speed_difference * 50;
-									if (speed_advantage < right_lane_speed_advantage)
-										right_lane_speed_advantage = speed_advantage;
+									if (speed_advantage < left_left_lane_speed_advantage)
+										left_left_lane_speed_advantage = speed_advantage;
 
 								}
 							}
@@ -357,24 +358,26 @@ int main() {
 					
 
 
-
-					while (cntr < 4 && keep_going && too_close) {
-						int maxElementIndex = std::max_element(advantages.begin(), advantages.end()) - advantages.begin();
-						double advantage = advantages[maxElementIndex];
-						if (advantage > threshold && safe[maxElementIndex]) 
-						{
-							lane += actions[maxElementIndex];
-							keep_going = false;
+					if (no_lane_change_counter != 0){
+						while (cntr < 4 && keep_going && too_close) {
+							int maxElementIndex = std::max_element(advantages.begin(), advantages.end()) - advantages.begin();
+							double advantage = advantages[maxElementIndex];
+							if (advantage > threshold && safe[maxElementIndex]) 
+							{
+								lane += actions[maxElementIndex];
+								keep_going = false;
+								no_lane_change_counter = 250; //disables lane changes for the next 5 seconds
+							}
+							else if (advantage < threshold) 
+							{
+								keep_going = false;
+							}
+							else 
+							{
+								advantages[maxElementIndex] = 0;
+							}
+							++cntr;
 						}
-						else if (advantage < threshold) 
-						{
-							keep_going = false;
-						}
-						else 
-						{
-							advantages[maxElementIndex] = 0;
-						}
-						++cntr;
 					}
 					std::cout << "lane " << lane << std::endl;
 					std::cout << std::endl;
@@ -489,6 +492,8 @@ int main() {
 					std::cout << "Calculating points using spline" << std::endl;
 					for (int i = 1; i <= 5 - previous_path_x.size(); ++i)
 					{
+						if (no_lane_change_counter > 0)
+							no_lane_change_counter -= 1;
 						ref_vel = ref_vel + ref_accel * 0.02*i;
 						if (ref_accel > 0 && ref_vel > (desired_vel/2.24))
 						{
