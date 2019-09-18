@@ -358,7 +358,7 @@ int main() {
 					
 
 
-					if (no_lane_change_counter != 0){
+					if (no_lane_change_counter == 0){
 						while (cntr < 4 && keep_going && too_close) {
 							int maxElementIndex = std::max_element(advantages.begin(), advantages.end()) - advantages.begin();
 							double advantage = advantages[maxElementIndex];
