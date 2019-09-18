@@ -170,13 +170,16 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = delta_s / (1-desired_speed_difference);
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
 								}
 								else if (delta_s > 0) {
 									speed_advantage = (5+desired_speed_difference * 100);
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
-								if (speed_advantage < right_lane_speed_advantage)
-									right_lane_speed_advantage = speed_advantage;
-							}
+															}
 							//CHECK RIGHT RIGHT LANE
 							if (d < (2 + 4 * (lane + 2) + 2) && d >(2 + 4 * (lane + 2) - 2))
 							{
@@ -193,12 +196,16 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 + desired_speed_difference * 50;
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
-								if (speed_advantage < right_right_lane_speed_advantage)
-									right_right_lane_speed_advantage = speed_advantage;
 							}
 
 						}
@@ -223,15 +230,17 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = delta_s / (1-desired_speed_difference);
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 + desired_speed_difference * 100;
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
-								if (speed_advantage < right_lane_speed_advantage)
-								{
-									right_lane_speed_advantage = speed_advantage;
-									std::cout << "New right lane change advantage: " << right_lane_speed_advantage << " with delta_s=" << delta_s << "and delta_v=" << desired_speed_difference << std::endl;
-								}
+
 							}
 							//CHECK LEFT LANE
 							if (d < (2 + 4 * (lane - 1) + 2) && d >(2 + 4 * (lane - 1) - 2))
@@ -249,12 +258,16 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = delta_s / (1-desired_speed_difference);
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 + desired_speed_difference * 100;
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
 								}
-								if (speed_advantage < left_lane_speed_advantage)
-									left_lane_speed_advantage = speed_advantage;
+
 							}
 						}
 
@@ -280,12 +293,17 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = delta_s / (1-desired_speed_difference);
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 +desired_speed_difference * 100;
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
-								if (speed_advantage < left_lane_speed_advantage)
-									left_lane_speed_advantage = speed_advantage;
+
 							}
 						
 							//CHECK LEFT LEFT LANE
@@ -304,12 +322,16 @@ int main() {
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
 								else if (delta_s > 0) {
 									speed_advantage = 5 + desired_speed_difference * 50;
+									if (speed_advantage < right_lane_speed_advantage)
+										right_lane_speed_advantage = speed_advantage;
+
 								}
-								if (speed_advantage < left_left_lane_speed_advantage)
-									left_left_lane_speed_advantage = speed_advantage;
 							}
 						}
 					}
