@@ -69,7 +69,7 @@ int main() {
 		if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
 			auto s = hasData(data);
-
+			
 			if (s != "") {
 				auto j = json::parse(s);
 
@@ -137,7 +137,7 @@ int main() {
 
 							if (delta_s > 0)
 							{
-								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 10 ) * (10 - delta_s); //mph
+								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 20 ) * (20 - delta_s); //mph
 								if (prel_desired_vel < desired_vel) {
 									desired_vel = prel_desired_vel;
 									too_close = true;
@@ -311,7 +311,7 @@ int main() {
 						}
 					}
 
-					double threshold = 100;
+					double threshold = 5;
 					vector<double> advantages{ right_lane_speed_advantage, left_lane_speed_advantage, right_right_lane_speed_advantage, left_left_lane_speed_advantage };
 					vector<bool> safe{ right_lane_is_safe, left_lane_is_safe, right_right_lane_is_safe, left_left_lane_is_safe };
 					vector<int> actions{ 1,-1,1,-1 };
@@ -443,10 +443,10 @@ int main() {
 						ptsx[i] = (shift_x * cos(0 - ref_yaw) - shift_y * sin(0 - ref_yaw));
 						ptsy[i] = (shift_x * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
 					}
-
+					std::cout << "Calculating spline" << std::endl;
 					tk::spline s;
 					s.set_points(ptsx, ptsy);
-
+					std::cout << "Calculated spline" << std::endl;
 					vector<double> next_x_vals;
 					vector<double> next_y_vals;
 
@@ -458,9 +458,10 @@ int main() {
 					// Calculate how to break up spline points so that we travel at our desired reference velocity
 					double target_x = 30.0;
 					double target_y = s(target_x);
-					double target_dist = sqrt(target_x * target_x) + target_y * target_y;
+					double target_dist = sqrt(target_x * target_x + target_y * target_y);
 
 					double x_add_on = 0;
+					std::cout << "Calculating points using spline" << std::endl;
 					for (int i = 1; i <= 5 - previous_path_x.size(); ++i)
 					{
 						ref_vel = ref_vel + ref_accel * 0.02*i;
@@ -492,7 +493,7 @@ int main() {
 						next_x_vals.push_back(x_point);
 						next_y_vals.push_back(y_point);
 					}
-
+					std::cout << "Calculated points using spline" << std::endl;
 
 					msgJson["next_x"] = next_x_vals;
 					msgJson["next_y"] = next_y_vals;
