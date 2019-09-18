@@ -394,23 +394,28 @@ int main() {
 					//double ref_accel = gain*(kp * error + ki*integral_term + kd*differential);
 					double ref_accel;
 					prev_ref_accel = ref_accel;
-					double max_jerk = 9;
+					double max_accel = 4;
+					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
+					if (no_lane_change_counter != 0) {
+						max_accel *= (1 - no_lane_change_counter / 250.0);
+						max_jerk *= (1 - no_lane_change_counter / 250.0);
+					}
 
 					if (desired_vel-(ref_vel*2.24) > 0)
 					{ //accelerate
 						ref_accel = prev_ref_accel + max_jerk * 0.02;
-						if (ref_accel > 4)
+						if (ref_accel > max_accel)
 						{
-							ref_accel = 4;
+							ref_accel = max_accel;
 						}
 					}
 					else if (desired_vel - (ref_vel*2.24) < 0)
 					{ //decellerate
 						ref_accel = prev_ref_accel - max_jerk * 0.02;
-						if (ref_accel < - 7)
+						if (ref_accel < -max_accel)
 						{
-							ref_accel = -7;
+							ref_accel = -max_accel;
 						}
 					}
 					else 
@@ -418,6 +423,8 @@ int main() {
 						//Keep current speed
 						ref_accel = 0;
 					}
+
+
 					prev_ref_accel = ref_accel;
 					//ref_vel = car_speed;
 					//std::cout << "Current ref_vel vehicle Speed: " << ref_vel << std::endl;
