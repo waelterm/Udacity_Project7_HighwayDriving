@@ -169,10 +169,10 @@ int main() {
 								}
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / -desired_speed_difference;
+									speed_advantage = delta_s / (1-desired_speed_difference);
 								}
 								else if (delta_s > 0) {
-									speed_advantage = desired_speed_difference * 100;
+									speed_advantage = (5+desired_speed_difference * 100);
 								}
 								if (speed_advantage < right_lane_speed_advantage)
 									right_lane_speed_advantage = speed_advantage;
@@ -192,10 +192,10 @@ int main() {
 									right_right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = 0.5*delta_s / -desired_speed_difference;
+									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
 								}
 								else if (delta_s > 0) {
-									speed_advantage = desired_speed_difference * 50;
+									speed_advantage = 5 + desired_speed_difference * 50;
 								}
 								if (speed_advantage < right_right_lane_speed_advantage)
 									right_right_lane_speed_advantage = speed_advantage;
@@ -222,13 +222,16 @@ int main() {
 									right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / -desired_speed_difference;
+									speed_advantage = delta_s / (1-desired_speed_difference);
 								}
 								else if (delta_s > 0) {
-									speed_advantage = desired_speed_difference * 100;
+									speed_advantage = 5 + desired_speed_difference * 100;
 								}
 								if (speed_advantage < right_lane_speed_advantage)
+								{
 									right_lane_speed_advantage = speed_advantage;
+									std::cout << "New right lane change advantage: " << right_lane_speed_advantage << " with delta_s=" << delta_s << "and delta_v=" << desired_speed_difference << std::endl;
+								}
 							}
 							//CHECK LEFT LANE
 							if (d < (2 + 4 * (lane - 1) + 2) && d >(2 + 4 * (lane - 1) - 2))
@@ -245,10 +248,10 @@ int main() {
 									left_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / -desired_speed_difference;
+									speed_advantage = delta_s / (1-desired_speed_difference);
 								}
 								else if (delta_s > 0) {
-									speed_advantage = desired_speed_difference * 100;
+									speed_advantage = 5 + desired_speed_difference * 100;
 								}
 								if (speed_advantage < left_lane_speed_advantage)
 									left_lane_speed_advantage = speed_advantage;
@@ -276,10 +279,10 @@ int main() {
 								}
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / -desired_speed_difference;
+									speed_advantage = delta_s / (1-desired_speed_difference);
 								}
 								else if (delta_s > 0) {
-									speed_advantage = desired_speed_difference * 100;
+									speed_advantage = 5 +desired_speed_difference * 100;
 								}
 								if (speed_advantage < left_lane_speed_advantage)
 									left_lane_speed_advantage = speed_advantage;
@@ -300,10 +303,10 @@ int main() {
 									right_right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = 0.5*delta_s / -desired_speed_difference;
+									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
 								}
 								else if (delta_s > 0) {
-									speed_advantage = desired_speed_difference * 50;
+									speed_advantage = 5 + desired_speed_difference * 50;
 								}
 								if (speed_advantage < left_left_lane_speed_advantage)
 									left_left_lane_speed_advantage = speed_advantage;
@@ -326,9 +329,9 @@ int main() {
 					std::cout << "left_lane_is_safe: " << left_lane_is_safe << std::endl;
 					std::cout << "right_right_lane_is_safe: " << right_right_lane_is_safe << std::endl;
 					std::cout << "left_left_lane_is_safe " << left_left_lane_is_safe << std::endl;
-					std::cout << "right_lane_speed_advantage: " << right_lane_speed_advantage << std::endl;
-					std::cout << "left_lane_speed_advantage: " << left_lane_speed_advantage << std::endl;
-					std::cout << "right_right_lane_speed_advantage: " << right_right_lane_speed_advantage << std::endl;
+					//std::cout << "right_lane_speed_advantage: " << right_lane_speed_advantage << std::endl;
+					//std::cout << "left_lane_speed_advantage: " << left_lane_speed_advantage << std::endl;
+					//std::cout << "right_right_lane_speed_advantage: " << right_right_lane_speed_advantage << std::endl;
 					
 
 
