@@ -395,11 +395,13 @@ int main() {
 					double ref_accel;
 					prev_ref_accel = ref_accel;
 					double max_accel = 4;
+					double max_decel = 2;
 					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 					if (no_lane_change_counter != 0) {
 						max_accel *= (1 - no_lane_change_counter / 150.0);
 						max_jerk *= (1 - no_lane_change_counter / 150.0);
+						max_decel *= (1 - no_lane_change_counter / 150.0);
 					}
 
 					if (desired_vel-(ref_vel*2.24) > 0)
@@ -413,9 +415,9 @@ int main() {
 					else if (desired_vel - (ref_vel*2.24) < 0)
 					{ //decellerate
 						ref_accel = prev_ref_accel - max_jerk * 0.02;
-						if (ref_accel < -max_accel)
+						if (ref_accel < -(max_decel-1))
 						{
-							ref_accel = -max_accel;
+							ref_accel = -max_decel;
 						}
 					}
 					else 
