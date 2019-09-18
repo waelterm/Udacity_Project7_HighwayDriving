@@ -161,17 +161,18 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 								{
 									right_lane_is_safe = false;
 									right_right_lane_is_safe = false;
 								}
 								double speed_advantage;
-								if (delta_s > 0 && delta_v < 0) {
-									speed_advantage = delta_s / -delta_v;
+								if (delta_s > 0 && desired_speed_difference < 0) {
+									speed_advantage = delta_s / -desired_speed_difference;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_v * 100;
+									speed_advantage = desired_speed_difference * 100;
 								}
 								if (speed_advantage < right_lane_speed_advantage)
 									right_lane_speed_advantage = speed_advantage;
@@ -186,14 +187,15 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								if (delta_s < 10 && delta_v > 0 && (6 * delta_v) > (delta_s + 20)) // 6 seconds for two lane changes and 2*10 meters buffer
+								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
-								if (delta_s > 0 && delta_v < 0) {
-									speed_advantage = 0.5*delta_s / -delta_v;
+								if (delta_s > 0 && desired_speed_difference < 0) {
+									speed_advantage = 0.5*delta_s / -desired_speed_difference;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_v * 50;
+									speed_advantage = desired_speed_difference * 50;
 								}
 								if (speed_advantage < right_right_lane_speed_advantage)
 									right_right_lane_speed_advantage = speed_advantage;
@@ -215,14 +217,15 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed/2.24 - ref_vel; //mps
-								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 									right_lane_is_safe = false;
 								double speed_advantage;
-								if (delta_s > 0 && delta_v < 0) {
-									speed_advantage = delta_s / -delta_v;
+								if (delta_s > 0 && desired_speed_difference < 0) {
+									speed_advantage = delta_s / -desired_speed_difference;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_v * 100;
+									speed_advantage = desired_speed_difference * 100;
 								}
 								if (speed_advantage < right_lane_speed_advantage)
 									right_lane_speed_advantage = speed_advantage;
@@ -237,14 +240,15 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 									left_lane_is_safe = false;
 								double speed_advantage;
-								if (delta_s > 0 && delta_v < 0) {
-									speed_advantage = delta_s / -delta_v;
+								if (delta_s > 0 && desired_speed_difference < 0) {
+									speed_advantage = delta_s / -desired_speed_difference;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_v * 100;
+									speed_advantage = desired_speed_difference * 100;
 								}
 								if (speed_advantage < left_lane_speed_advantage)
 									left_lane_speed_advantage = speed_advantage;
@@ -264,17 +268,18 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								if (delta_s < 10 && delta_v > 0 && (3 * delta_v) > (delta_s + 10)) // 3 seconds for lane change and 10 meters buffer
+								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 								{
 									left_lane_is_safe = false;
 									left_left_lane_is_safe = false;
 								}
 								double speed_advantage;
-								if (delta_s > 0 && delta_v < 0) {
-									speed_advantage = delta_s / -delta_v;
+								if (delta_s > 0 && desired_speed_difference < 0) {
+									speed_advantage = delta_s / -desired_speed_difference;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_v * 100;
+									speed_advantage = desired_speed_difference * 100;
 								}
 								if (speed_advantage < left_lane_speed_advantage)
 									left_lane_speed_advantage = speed_advantage;
@@ -290,14 +295,15 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								if (delta_s < 10 && delta_v > 0 && (6 * delta_v) > (delta_s + 20)) // 6 seconds for two lane changes and 2*10 meters buffer
+								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
-								if (delta_s > 0 && delta_v < 0) {
-									speed_advantage = 0.5*delta_s / -delta_v;
+								if (delta_s > 0 && desired_speed_difference < 0) {
+									speed_advantage = 0.5*delta_s / -desired_speed_difference;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = delta_v * 50;
+									speed_advantage = desired_speed_difference * 50;
 								}
 								if (speed_advantage < left_left_lane_speed_advantage)
 									left_left_lane_speed_advantage = speed_advantage;
