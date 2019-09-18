@@ -176,7 +176,7 @@ int main() {
 										right_lane_speed_advantage = speed_advantage;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = (5+desired_speed_difference * 100);
+									speed_advantage = (5+desired_speed_difference * 10);
 									if (speed_advantage < right_lane_speed_advantage)
 										right_lane_speed_advantage = speed_advantage;
 
@@ -203,7 +203,7 @@ int main() {
 
 								}
 								else if (delta_s > 0) {
-									speed_advantage = 5 + desired_speed_difference * 50;
+									speed_advantage = 5 + desired_speed_difference * 5;
 									if (speed_advantage < right_right_lane_speed_advantage)
 										right_right_lane_speed_advantage = speed_advantage;
 
@@ -237,7 +237,7 @@ int main() {
 
 								}
 								else if (delta_s > 0) {
-									speed_advantage = 5 + desired_speed_difference * 100;
+									speed_advantage = 5 + desired_speed_difference * 10;
 									if (speed_advantage < right_lane_speed_advantage)
 										right_lane_speed_advantage = speed_advantage;
 
@@ -265,7 +265,7 @@ int main() {
 
 								}
 								else if (delta_s > 0) {
-									speed_advantage = 5 + desired_speed_difference * 100;
+									speed_advantage = 5 + desired_speed_difference * 10;
 									if (speed_advantage < left_lane_speed_advantage)
 										left_lane_speed_advantage = speed_advantage;
 								}
@@ -300,7 +300,7 @@ int main() {
 
 								}
 								else if (delta_s > 0) {
-									speed_advantage = 5 +desired_speed_difference * 100;
+									speed_advantage = 5 +desired_speed_difference * 10;
 									if (speed_advantage < left_lane_speed_advantage)
 										left_lane_speed_advantage = speed_advantage;
 
@@ -367,7 +367,7 @@ int main() {
 							{
 								lane += actions[maxElementIndex];
 								keep_going = false;
-								no_lane_change_counter = 150; //disables lane changes for the next 5 seconds
+								no_lane_change_counter = 100; //disables lane changes for the next 2 seconds
 							}
 							else if (advantage < threshold) 
 							{
@@ -400,9 +400,9 @@ int main() {
 					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 					if (no_lane_change_counter != 0) {
-						max_accel *= (1 - no_lane_change_counter / 150.0);
-						max_jerk *= (1 - no_lane_change_counter / 150.0);
-						max_decel *= (1 - no_lane_change_counter / 150.0);
+						max_accel *= (1 - no_lane_change_counter / 100.0);
+						max_jerk *= (1 - no_lane_change_counter / 100.0);
+						max_decel *= (1 - no_lane_change_counter / 100.0);
 					}
 
 					if (desired_vel-(ref_vel*2.24) > 0)
