@@ -36,7 +36,7 @@ int main() {
 	double ref_vel = 0;
 	double prev_ref_accel = 0;
 	int lane = 1;
-	int no_lane_change_counter = 250; // No lane change in the first 5 seconds
+	int no_lane_change_counter = 0; // No lane change in the first 5 seconds
 	while (getline(in_map_, line)) {
 		std::istringstream iss(line);
 		double x;
