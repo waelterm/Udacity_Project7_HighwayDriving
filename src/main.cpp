@@ -37,6 +37,7 @@ int main() {
 	double prev_ref_accel = 0;
 	while (getline(in_map_, line)) {
 		std::istringstream iss(line);
+		int lane = 1;
 		double x;
 		double y;
 		float s;
@@ -59,12 +60,11 @@ int main() {
 
 	h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s,
 		&map_waypoints_dx, &map_waypoints_dy, &integral_term, &ref_vel, &prev_ref_accel]
-		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length,
+		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length, &lane,
 			uWS::OpCode opCode) {
 		// "42" at the start of the message means there's a websocket message event.
 		// The 4 signifies a websocket message
 		// The 2 signifies a websocket event
-		int lane = 1;
 		double desired_vel = 49.5; //mph
 		if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
@@ -137,7 +137,7 @@ int main() {
 
 							if (delta_s > 0)
 							{
-								double prel_desired_vel = check_speed - (check_speed / 10 ) * (10 - delta_s); //mph
+								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 10 ) * (10 - delta_s); //mph
 								if (prel_desired_vel < desired_vel) {
 									desired_vel = prel_desired_vel;
 									too_close = true;
@@ -160,8 +160,8 @@ int main() {
 								double check_car_s = sensor_fusion[i][5];
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
-								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								double delta_v = check_speed - ref_vel; //mps
+								double desired_speed_difference = (check_speed - desired_vel/2.24) ;
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 								{
 									right_lane_is_safe = false;
@@ -186,8 +186,8 @@ int main() {
 								double check_car_s = sensor_fusion[i][5];
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
-								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								double delta_v = check_speed - ref_vel; //mps
+								double desired_speed_difference = (check_speed - desired_vel/2.24);
 								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
@@ -216,8 +216,8 @@ int main() {
 								double check_car_s = sensor_fusion[i][5];
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
-								double delta_v = check_speed/2.24 - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								double delta_v = check_speed - ref_vel; //mps
+								double desired_speed_difference = (check_speed - desired_vel / 2.24);
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 									right_lane_is_safe = false;
 								double speed_advantage;
@@ -239,8 +239,8 @@ int main() {
 								double check_car_s = sensor_fusion[i][5];
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
-								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								double delta_v = check_speed - ref_vel; //mps
+								double desired_speed_difference = (check_speed - desired_vel / 2.24);
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 									left_lane_is_safe = false;
 								double speed_advantage;
@@ -267,8 +267,8 @@ int main() {
 								double check_car_s = sensor_fusion[i][5];
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
-								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								double delta_v = check_speed - ref_vel; //mps
+								double desired_speed_difference = (check_speed - desired_vel / 2.24);
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 10)) || (delta_s < 10 && delta_s > -10)) // 3 seconds for lane change and 10 meters buffer
 								{
 									left_lane_is_safe = false;
@@ -294,8 +294,8 @@ int main() {
 								double check_car_s = sensor_fusion[i][5];
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
-								double delta_v = check_speed / 2.24 - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel) / 2.24;
+								double delta_v = check_speed - ref_vel; //mps
+								double desired_speed_difference = (check_speed - desired_vel / 2.24);
 								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
@@ -311,7 +311,7 @@ int main() {
 						}
 					}
 
-					double threshold = 10;
+					double threshold = 100;
 					vector<double> advantages{ right_lane_speed_advantage, left_lane_speed_advantage, right_right_lane_speed_advantage, left_left_lane_speed_advantage };
 					vector<bool> safe{ right_lane_is_safe, left_lane_is_safe, right_right_lane_is_safe, left_left_lane_is_safe };
 					vector<int> actions{ 1,-1,1,-1 };
