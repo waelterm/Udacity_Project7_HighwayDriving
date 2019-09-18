@@ -35,9 +35,9 @@ int main() {
 	double integral_term = 0;
 	double ref_vel = 0;
 	double prev_ref_accel = 0;
+	int lane = 1;
 	while (getline(in_map_, line)) {
 		std::istringstream iss(line);
-		int lane = 1;
 		double x;
 		double y;
 		float s;
@@ -59,8 +59,8 @@ int main() {
 
 
 	h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s,
-		&map_waypoints_dx, &map_waypoints_dy, &integral_term, &ref_vel, &prev_ref_accel]
-		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length, &lane,
+		&map_waypoints_dx, &map_waypoints_dy, &integral_term, &ref_vel, &lane, &prev_ref_accel]
+		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length, 
 			uWS::OpCode opCode) {
 		// "42" at the start of the message means there's a websocket message event.
 		// The 4 signifies a websocket message
