@@ -163,7 +163,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel/2.24) ;
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 								{
 									right_lane_is_safe = false;
 									right_right_lane_is_safe = false;
@@ -192,7 +192,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel/2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 40)) || (delta_s < 40 && delta_s > -40)) // 6 seconds for two lane changes and 2*10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > - 2*gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -226,7 +226,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 									right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -254,7 +254,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 									left_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -286,7 +286,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s + 20)) || (delta_s < 20 && delta_s > -20)) // 3 seconds for lane change and 10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 								{
 									left_lane_is_safe = false;
 									left_left_lane_is_safe = false;
@@ -318,8 +318,8 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s + 40)) || (delta_s < 40 && delta_s > -40)) // 6 seconds for two lane changes and 2*10 meters buffer
-									right_right_lane_is_safe = false;
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > -2*gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
+									left_left_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
 									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
