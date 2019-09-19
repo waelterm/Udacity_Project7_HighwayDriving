@@ -539,7 +539,7 @@ int main() {
 						next_y_vals.push_back(y_point);
 					}
 					std::cout << "Calculated points using spline" << std::endl;
-
+					sleep(50);
 					msgJson["next_x"] = next_x_vals;
 					msgJson["next_y"] = next_y_vals;
 
@@ -553,7 +553,6 @@ int main() {
 				std::string msg = "42[\"manual\",{}]";
 				ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 			}
-			sleep(50);
 		}  // end websocket if
 	}); // end h.onMessage
 
