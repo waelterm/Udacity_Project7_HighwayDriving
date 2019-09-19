@@ -501,7 +501,7 @@ int main() {
 						next_y_vals.push_back(previous_path_y[i]);
 					}
 					// Calculate how to break up spline points so that we travel at our desired reference velocity
-					double target_x = 5;
+					target_x = 5;
 					double target_y = s(target_x);
 					double target_dist = sqrt(target_x * target_x + target_y * target_y);
 
