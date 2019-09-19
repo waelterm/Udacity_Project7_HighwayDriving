@@ -61,7 +61,7 @@ int main() {
 
 	h.onMessage([&map_waypoints_x, &map_waypoints_y, &map_waypoints_s,
 		&map_waypoints_dx, &map_waypoints_dy, &integral_term, &ref_vel, &lane, &prev_ref_accel, &no_lane_change_counter]
-		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length, 
+		(uWS::WebSocket<uWS::SERVER> ws, char* data, size_t length,
 			uWS::OpCode opCode) {
 		// "42" at the start of the message means there's a websocket message event.
 		// The 4 signifies a websocket message
@@ -70,7 +70,7 @@ int main() {
 		if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
 			auto s = hasData(data);
-			
+
 			if (s != "") {
 				auto j = json::parse(s);
 
@@ -105,24 +105,30 @@ int main() {
 
 					//std::cout << "Number of points used:" << prev_size << std::endl;
 
+
+					// Using the last waypoint of last path as starting point for new path planning
 					if (prev_size > 0)
 					{
 						car_s = end_path_s;
 					}
 
+					// Initializing vairables for lane change decisions
 					bool too_close = false;
 					double speed_loss;
 					bool right_lane_is_safe = true;
 					bool right_right_lane_is_safe = true;
 					bool left_lane_is_safe = true;
 					bool left_left_lane_is_safe = true;
-
 					double right_lane_speed_advantage = 9999.0;
 					double right_right_lane_speed_advantage = 9999.0;
 					double left_lane_speed_advantage = 9999.0;
 					double left_left_lane_speed_advantage = 9999.0;
-					// fid ref_v to use
-					double gap_size = 20;
+
+
+					double gap_size = 20; // Minimum distance to front vehicle for lane change
+
+					// Calculating desired velocity based on lead vehicle
+					// if no lead vehicle is found, desired velocity is 49.5 mph
 					for (int i = 0; i < sensor_fusion.size(); ++i)
 					{
 						float d = sensor_fusion[i][6];
@@ -139,17 +145,17 @@ int main() {
 
 							if (delta_s > 0)
 							{
-								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 20 ) * (20 - delta_s); //mph
+								double prel_desired_vel = check_speed * 2.24 - (check_speed * 2.24 / 20) * (20 - delta_s); //mph
 								if (prel_desired_vel < desired_vel) {
-									desired_vel = prel_desired_vel;
-									too_close = true;
+									desired_vel = prel_desired_vel; // updating desired velocity
+									too_close = true; // setting flag to consider lane change
 									speed_loss = 49.5 - desired_vel;
 								}
 							}
-						}// Checking right lane
+						}
 
 
-						 // if lane == 0
+						// If vehicle is in left lane
 						if (lane == 0) {
 							left_lane_is_safe = false;
 							left_left_lane_is_safe = false;
@@ -163,25 +169,27 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel/2.24) ;
+								double desired_speed_difference = (check_speed - desired_vel / 2.24);
+								// Safety conditions
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 								{
 									right_lane_is_safe = false;
 									right_right_lane_is_safe = false;
 								}
+								// Calculating utility function
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / (1-desired_speed_difference);
+									speed_advantage = delta_s / (1 - desired_speed_difference);
 									if (speed_advantage < right_lane_speed_advantage)
 										right_lane_speed_advantage = speed_advantage;
 								}
 								else if (delta_s > 0) {
-									speed_advantage = (5+desired_speed_difference * 10);
+									speed_advantage = (5 + desired_speed_difference * 10);
 									if (speed_advantage < right_lane_speed_advantage)
 										right_lane_speed_advantage = speed_advantage;
 
 								}
-															}
+							}
 							//CHECK RIGHT RIGHT LANE
 							if (d < (2 + 4 * (lane + 2) + 2) && d >(2 + 4 * (lane + 2) - 2))
 							{
@@ -192,12 +200,14 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
-								double desired_speed_difference = (check_speed - desired_vel/2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > - 2*gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
+								double desired_speed_difference = (check_speed - desired_vel / 2.24);
+								// Safety Conditions
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2 * gap_size)) || (delta_s < 2 * gap_size && delta_s > -2 * gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
+								// Calculating utility function
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
+									speed_advantage = 0.5 * delta_s / (1 - desired_speed_difference);
 									if (speed_advantage < right_right_lane_speed_advantage)
 										right_right_lane_speed_advantage = speed_advantage;
 
@@ -212,7 +222,8 @@ int main() {
 
 						}
 
-						else if(lane == 1) 
+						// If vehicle is in center lane
+						else if (lane == 1)
 						{
 							right_right_lane_is_safe = false;
 							left_left_lane_is_safe = false;
@@ -226,12 +237,14 @@ int main() {
 								check_car_s += ((double)prev_size * 0.02 * check_speed);
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
+								// Safety conditions
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 									right_lane_is_safe = false;
+								// Calculating utility function
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / (1-desired_speed_difference);
+									speed_advantage = delta_s / (1 - desired_speed_difference);
 									if (speed_advantage < right_lane_speed_advantage)
 										right_lane_speed_advantage = speed_advantage;
 
@@ -255,11 +268,13 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
+								// Safety conditions
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 									left_lane_is_safe = false;
+								// Calculating Utility function
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / (1-desired_speed_difference);
+									speed_advantage = delta_s / (1 - desired_speed_difference);
 									if (speed_advantage < left_lane_speed_advantage)
 										left_lane_speed_advantage = speed_advantage;
 
@@ -273,6 +288,7 @@ int main() {
 							}
 						}
 
+						// If vehicle is in right lane
 						else if (lane == 2) {
 							right_lane_is_safe = false;
 							right_right_lane_is_safe = false;
@@ -287,27 +303,29 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
+								// Safety conditions
 								if ((delta_s < 0 && delta_v > 0 && (3 * delta_v) > (-delta_s - gap_size)) || (delta_s < gap_size && delta_s > -gap_size)) // 3 seconds for lane change and 10 meters buffer
 								{
 									left_lane_is_safe = false;
 									left_left_lane_is_safe = false;
 								}
+								// Calculating utility function
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = delta_s / (1-desired_speed_difference);
+									speed_advantage = delta_s / (1 - desired_speed_difference);
 									if (speed_advantage < left_lane_speed_advantage)
 										left_lane_speed_advantage = speed_advantage;
 
 								}
 								else if (delta_s > 0) {
-									speed_advantage = 5 +desired_speed_difference * 10;
+									speed_advantage = 5 + desired_speed_difference * 10;
 									if (speed_advantage < left_lane_speed_advantage)
 										left_lane_speed_advantage = speed_advantage;
 
 								}
 
 							}
-						
+
 							//CHECK LEFT LEFT LANE
 							if (d < (2 + 4 * (lane - 2) + 2) && d >(2 + 4 * (lane - 2) - 2))
 							{
@@ -319,11 +337,13 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > -2*gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
+								// Safety conditions
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2 * gap_size)) || (delta_s < 2 * gap_size && delta_s > -2 * gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
 									left_left_lane_is_safe = false;
+								// Calculating utility function
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
-									speed_advantage = 0.5*delta_s / (1-desired_speed_difference);
+									speed_advantage = 0.5 * delta_s / (1 - desired_speed_difference);
 									if (speed_advantage < left_left_lane_speed_advantage)
 										left_left_lane_speed_advantage = speed_advantage;
 
@@ -338,42 +358,44 @@ int main() {
 						}
 					}
 
-					double threshold = 10;
+					double threshold = 10; // Minimum utility value to make a lane change
 					vector<double> advantages{ right_lane_speed_advantage, left_lane_speed_advantage, right_right_lane_speed_advantage, left_left_lane_speed_advantage };
 					vector<bool> safe{ right_lane_is_safe, left_lane_is_safe, right_right_lane_is_safe, left_left_lane_is_safe };
 					vector<int> actions{ 1,-1,1,-1 };
 					int cntr = 0;
 					bool keep_going = true;
-					std::cout << "too_close: " << too_close << std::endl;
-					std::cout << "right_lane_speed_advantage: " << right_lane_speed_advantage << std::endl;
-					std::cout << "left_lane_speed_advantage: " << left_lane_speed_advantage << std::endl;
-					std::cout << "right_right_lane_speed_advantage: " << right_right_lane_speed_advantage << std::endl;
-					std::cout << "left_left_lane_speed_advantage: " << left_left_lane_speed_advantage << std::endl;
-					std::cout << "right_lane_is_safe: " << right_lane_is_safe << std::endl;
-					std::cout << "left_lane_is_safe: " << left_lane_is_safe << std::endl;
-					std::cout << "right_right_lane_is_safe: " << right_right_lane_is_safe << std::endl;
-					std::cout << "left_left_lane_is_safe " << left_left_lane_is_safe << std::endl;
+					// PRINT STATEMENTS FOR DEBUGGING
+					//std::cout << "too_close: " << too_close << std::endl;
 					//std::cout << "right_lane_speed_advantage: " << right_lane_speed_advantage << std::endl;
 					//std::cout << "left_lane_speed_advantage: " << left_lane_speed_advantage << std::endl;
 					//std::cout << "right_right_lane_speed_advantage: " << right_right_lane_speed_advantage << std::endl;
-					
+					//std::cout << "left_left_lane_speed_advantage: " << left_left_lane_speed_advantage << std::endl;
+					//std::cout << "right_lane_is_safe: " << right_lane_is_safe << std::endl;
+					//std::cout << "left_lane_is_safe: " << left_lane_is_safe << std::endl;
+					//std::cout << "right_right_lane_is_safe: " << right_right_lane_is_safe << std::endl;
+					//std::cout << "left_left_lane_is_safe " << left_left_lane_is_safe << std::endl;
+					//std::cout << "right_lane_speed_advantage: " << right_lane_speed_advantage << std::endl;
+					//std::cout << "left_lane_speed_advantage: " << left_lane_speed_advantage << std::endl;
+					//std::cout << "right_right_lane_speed_advantage: " << right_right_lane_speed_advantage << std::endl;
 
 
-					if (no_lane_change_counter == 0){
+					// If no lane change in progress
+					if (no_lane_change_counter == 0) {
+						// Find safe lane change command with maximum utility if vehicle is not able to drive at optimal speed. 
 						while (cntr < 4 && keep_going && too_close) {
 							int maxElementIndex = std::max_element(advantages.begin(), advantages.end()) - advantages.begin();
 							double advantage = advantages[maxElementIndex];
-							if (advantage > threshold && safe[maxElementIndex]) 
+							if (advantage > threshold && safe[maxElementIndex])
 							{
 								lane += actions[maxElementIndex];
 								keep_going = false;
 								no_lane_change_counter = 100; //disables lane changes for the next 2 seconds
 							}
-							else if (advantage < threshold) 
+							else if (advantage < threshold)
 							{
 								keep_going = false;
 							}
-							else 
+							else
 							{
 								advantages[maxElementIndex] = 0;
 							}
@@ -383,29 +405,20 @@ int main() {
 					std::cout << "lane " << lane << std::endl;
 					std::cout << std::endl;
 
-					//double error = desired_vel - car_speed;
-					//double time = (50 - prev_size) * 0.02;
-					//double differential = error / time;
-					//integral_term += time * error;
-					//double kp = 0.9;
-					//double ki = 0.1;
-					//double kd = 0.01;
-					//double gain = 3;
-					
-					//double ref_accel = gain*(kp * error + ki*integral_term + kd*differential);
+					// Calculating reference acceleration
 					double ref_accel;
-					prev_ref_accel = ref_accel;
 					double max_accel = 1.5;
 					double max_decel = 1.5;
 					double max_jerk = 8;
-					// 3 State Machine - Accelerate, Decelerate, Keep Speed
+
 					if (no_lane_change_counter != 0) {
+						// Limit acceleration if lane change in progress
 						max_accel *= (1 - no_lane_change_counter / 100.0);
 						max_jerk *= (1 - no_lane_change_counter / 100.0);
 						max_decel *= (1 - no_lane_change_counter / 100.0);
 					}
-
-					if (desired_vel-(ref_vel*2.24) > 0)
+					// 3 State Machine - Accelerate, Decelerate, Keep Speed
+					if (desired_vel - (ref_vel * 2.24) > 0)
 					{ //accelerate
 						ref_accel = prev_ref_accel + max_jerk * 0.02;
 						if (ref_accel > max_accel)
@@ -413,7 +426,7 @@ int main() {
 							ref_accel = max_accel;
 						}
 					}
-					else if (desired_vel - (ref_vel*2.24) < 0)
+					else if (desired_vel - (ref_vel * 2.24) < 0)
 					{ //decellerate
 						ref_accel = prev_ref_accel - max_jerk * 0.02;
 						if (ref_accel < -(max_decel))
@@ -421,21 +434,18 @@ int main() {
 							ref_accel = -max_decel;
 						}
 					}
-					else 
+					else
 					{
-						//Keep current speed
+						//Keep current speed (NOT USED ANYMORE)
 						ref_accel = 0;
 					}
 
-
 					prev_ref_accel = ref_accel;
-					//ref_vel = car_speed;
-					//std::cout << "Current ref_vel vehicle Speed: " << ref_vel << std::endl;
-					// Vector of widely spaced waypoints
 
 					vector<double> ptsx;
 					vector<double> ptsy;
 
+					// Finding four reference points for spline
 					double ref_x = car_x;
 					double ref_y = car_y;
 					double ref_yaw = deg2rad(car_yaw);
@@ -465,7 +475,7 @@ int main() {
 						ptsy.push_back(ref_y);
 					}
 
-					double next_d = 2+4*lane;
+					double next_d = 2 + 4 * lane;
 					for (int i = 1; i < 4; ++i) {
 						double next_s = car_s + 30 * i;
 						vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
@@ -473,7 +483,7 @@ int main() {
 						ptsy.push_back(next_xy[1]);
 					}
 
-					// Turn into vehicle coordinates
+					// Transform into vehicle coordinates
 					for (int i = 0; i < ptsx.size(); ++i)
 					{
 						double shift_x = ptsx[i] - ref_x;
@@ -481,10 +491,11 @@ int main() {
 						ptsx[i] = (shift_x * cos(0 - ref_yaw) - shift_y * sin(0 - ref_yaw));
 						ptsy[i] = (shift_x * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
 					}
-					std::cout << "Calculating spline" << std::endl;
+					// Fit points to spline
+					//std::cout << "Calculating spline" << std::endl;
 					tk::spline s;
 					s.set_points(ptsx, ptsy);
-					std::cout << "Calculated spline" << std::endl;
+					//std::cout << "Calculated spline" << std::endl;
 					vector<double> next_x_vals;
 					vector<double> next_y_vals;
 
@@ -499,37 +510,37 @@ int main() {
 					double target_dist = sqrt(target_x * target_x + target_y * target_y);
 
 					double x_add_on = 0;
-					std::cout << "Calculating points using spline" << std::endl;
+					//std::cout << "Calculating points using spline" << std::endl;
 					for (int i = 1; i <= 5 - previous_path_x.size(); ++i)
 					{
 						if (no_lane_change_counter > 0)
 							no_lane_change_counter -= 1;
-						ref_vel = ref_vel + ref_accel * 0.02*i;
-						if (ref_accel > 0 && ref_vel > (desired_vel/2.24))
+						ref_vel = ref_vel + ref_accel * 0.02 * i;
+						if (ref_accel > 0 && ref_vel > (desired_vel / 2.24))
 						{
-							ref_vel = (desired_vel/2.24);
+							ref_vel = (desired_vel / 2.24);
 						}
-						else if (ref_accel < 0 && ref_vel < (desired_vel/2.24))
+						else if (ref_accel < 0 && ref_vel < (desired_vel / 2.24))
 						{
-							ref_vel = (desired_vel/2.24);
+							ref_vel = (desired_vel / 2.24);
 						}
 
-						double N = (target_dist / (0.02 * ref_vel)); // 2.2f turn mph to mps
+						double N = (target_dist / (0.02 * ref_vel));
 						double x_point = x_add_on + (target_x) / N;
 						double y_point = s(x_point);
 
 						x_add_on = x_point;
-						
+
 						double x_ref = x_point;
 						double y_ref = y_point;
 
 						// Rotate back to global coordinates
-						
 						x_point = (x_ref * cos(ref_yaw) - y_ref * sin(ref_yaw));
 						y_point = (x_ref * sin(ref_yaw) + y_ref * cos(ref_yaw));
 						x_point += ref_x;
 						y_point += ref_y;
 
+						// Add to waypoint list
 						next_x_vals.push_back(x_point);
 						next_y_vals.push_back(y_point);
 					}
