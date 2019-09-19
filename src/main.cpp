@@ -395,7 +395,6 @@ int main() {
 					
 					//double ref_accel = gain*(kp * error + ki*integral_term + kd*differential);
 					double ref_accel;
-					prev_ref_accel = ref_accel;
 					double max_accel = 1.5;
 					double max_decel = 1;
 					double max_jerk = 5;
@@ -427,7 +426,6 @@ int main() {
 						//Keep current speed
 						ref_accel = 0;
 					}
-
 
 					prev_ref_accel = ref_accel;
 					//ref_vel = car_speed;
@@ -541,7 +539,7 @@ int main() {
 						next_y_vals.push_back(y_point);
 					}
 					std::cout << "Calculated points using spline" << std::endl;
-					usleep(100000);
+					//usleep(100000);
 					msgJson["next_x"] = next_x_vals;
 					msgJson["next_y"] = next_y_vals;
 
