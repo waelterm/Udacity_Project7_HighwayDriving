@@ -8,7 +8,7 @@
 #include "helpers.h"
 #include "json.hpp"
 #include "spline.h"
-#include <stdlib.h>
+#include <unistd.h>
 
 // for convenience
 using nlohmann::json;
@@ -541,7 +541,7 @@ int main() {
 						next_y_vals.push_back(y_point);
 					}
 					std::cout << "Calculated points using spline" << std::endl;
-					sleep(1);
+					usleep(100000);
 					msgJson["next_x"] = next_x_vals;
 					msgJson["next_y"] = next_y_vals;
 
