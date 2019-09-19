@@ -139,7 +139,7 @@ int main() {
 
 							if (delta_s > 0)
 							{
-								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 20 ) * (20 - delta_s); //mph
+								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 25 ) * (25 - delta_s); //mph
 								if (prel_desired_vel < desired_vel) {
 									desired_vel = prel_desired_vel;
 									too_close = true;
@@ -505,7 +505,7 @@ int main() {
 
 					double x_add_on = 0;
 					std::cout << "Calculating points using spline" << std::endl;
-					for (int i = 1; i <= 5 - previous_path_x.size(); ++i)
+					for (int i = 1; i <= 10 - previous_path_x.size(); ++i)
 					{
 						if (no_lane_change_counter > 0)
 							no_lane_change_counter -= 1;
@@ -553,6 +553,7 @@ int main() {
 				std::string msg = "42[\"manual\",{}]";
 				ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 			}
+			sleep(50);
 		}  // end websocket if
 	}); // end h.onMessage
 
