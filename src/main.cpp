@@ -397,8 +397,8 @@ int main() {
 					double ref_accel;
 					prev_ref_accel = ref_accel;
 					double max_accel = 1.5;
-					double max_decel = 1.3;
-					double max_jerk = 3;
+					double max_decel = 1.15;
+					double max_jerk = 5;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 					if (no_lane_change_counter != 0) {
 						max_accel *= (1 - no_lane_change_counter / 150.0);
