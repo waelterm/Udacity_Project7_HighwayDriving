@@ -505,7 +505,7 @@ int main() {
 
 					double x_add_on = 0;
 					std::cout << "Calculating points using spline" << std::endl;
-					for (int i = 1; i <= 15 - previous_path_x.size(); ++i)
+					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
 					{
 						if (no_lane_change_counter > 0)
 							no_lane_change_counter -= 1;
