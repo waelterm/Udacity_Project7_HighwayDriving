@@ -103,7 +103,7 @@ int main() {
 					// Number of points in last suggested path
 					int prev_size = previous_path_x.size();
 
-					//std::cout << "Number of points used:" << prev_size << std::endl;
+					std::cout << "Number of points used:" << 5 - prev_size << std::endl;
 
 					if (prev_size > 0)
 					{
@@ -367,7 +367,7 @@ int main() {
 							{
 								lane += actions[maxElementIndex];
 								keep_going = false;
-								no_lane_change_counter = 100; //disables lane changes for the next 2 seconds
+								no_lane_change_counter = 150; //disables lane changes for the next 2 seconds
 							}
 							else if (advantage < threshold) 
 							{
@@ -395,14 +395,14 @@ int main() {
 					//double ref_accel = gain*(kp * error + ki*integral_term + kd*differential);
 					double ref_accel;
 					prev_ref_accel = ref_accel;
-					double max_accel = 4;
+					double max_accel = 3.5;
 					double max_decel = 1.5;
 					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 					if (no_lane_change_counter != 0) {
-						max_accel *= (1 - no_lane_change_counter / 100.0);
-						max_jerk *= (1 - no_lane_change_counter / 100.0);
-						max_decel *= (1 - no_lane_change_counter / 100.0);
+						max_accel *= (1 - no_lane_change_counter / 150.0);
+						max_jerk *= (1 - no_lane_change_counter / 150.0);
+						max_decel *= (1 - no_lane_change_counter / 150.0);
 					}
 
 					if (desired_vel-(ref_vel*2.24) > 0)
@@ -466,8 +466,14 @@ int main() {
 					}
 
 					double next_d = 2+4*lane;
+					double target_x;
+					if (no_lane_change_counter != 0)
+						target_x = 30.0;
+					else
+						target_x = 20.0;
+
 					for (int i = 1; i < 4; ++i) {
-						double next_s = car_s + 30 * i;
+						double next_s = car_s + target_x * i;
 						vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 						ptsx.push_back(next_xy[0]);
 						ptsy.push_back(next_xy[1]);
@@ -494,7 +500,6 @@ int main() {
 						next_y_vals.push_back(previous_path_y[i]);
 					}
 					// Calculate how to break up spline points so that we travel at our desired reference velocity
-					double target_x = 30.0;
 					double target_y = s(target_x);
 					double target_dist = sqrt(target_x * target_x + target_y * target_y);
 
