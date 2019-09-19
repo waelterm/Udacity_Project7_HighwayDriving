@@ -505,11 +505,11 @@ int main() {
 
 					double x_add_on = 0;
 					std::cout << "Calculating points using spline" << std::endl;
-					for (int i = 1; i <= 50 - previous_path_x.size(); ++i)
+					for (int i = 1; i <= 3 - previous_path_x.size(); ++i)
 					{
 						if (no_lane_change_counter > 0)
 							no_lane_change_counter -= 1;
-						ref_vel = ref_vel + ref_accel * 0.02*i;
+						ref_vel = ref_vel + ref_accel * 0.02; // WORK *i
 						if (ref_accel > 0 && ref_vel > (desired_vel/2.24))
 						{
 							ref_vel = (desired_vel/2.24);
