@@ -8,7 +8,6 @@
 #include "helpers.h"
 #include "json.hpp"
 #include "spline.h"
-#include <unistd.h>
 
 // for convenience
 using nlohmann::json;
@@ -104,7 +103,7 @@ int main() {
 					// Number of points in last suggested path
 					int prev_size = previous_path_x.size();
 
-					std::cout << "Number of points used:" << 15 - prev_size << std::endl;
+					//std::cout << "Number of points used:" << prev_size << std::endl;
 
 					if (prev_size > 0)
 					{
@@ -140,7 +139,7 @@ int main() {
 
 							if (delta_s > 0)
 							{
-								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 30 ) * (30 - delta_s); //mph
+								double prel_desired_vel = check_speed*2.24 - (check_speed*2.24 / 20 ) * (20 - delta_s); //mph
 								if (prel_desired_vel < desired_vel) {
 									desired_vel = prel_desired_vel;
 									too_close = true;
@@ -194,7 +193,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel/2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > - 2*gap_size) || right_lane_speed_advantage < 6) // 6 seconds for two lane changes and 2*10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > - 2*gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
 									right_right_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -320,7 +319,7 @@ int main() {
 								double delta_s = check_car_s - car_s;
 								double delta_v = check_speed - ref_vel; //mps
 								double desired_speed_difference = (check_speed - desired_vel / 2.24);
-								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > -2*gap_size) || left_lane_speed_advantage < 6) // 6 seconds for two lane changes and 2*10 meters buffer
+								if ((delta_s < 0 && delta_v > 0 && (6 * delta_v) > (-delta_s - 2*gap_size)) || (delta_s < 2*gap_size && delta_s > -2*gap_size)) // 6 seconds for two lane changes and 2*10 meters buffer
 									left_left_lane_is_safe = false;
 								double speed_advantage;
 								if (delta_s > 0 && desired_speed_difference < 0) {
@@ -368,7 +367,7 @@ int main() {
 							{
 								lane += actions[maxElementIndex];
 								keep_going = false;
-								no_lane_change_counter = 150; //disables lane changes for the next 2 seconds
+								no_lane_change_counter = 100; //disables lane changes for the next 2 seconds
 							}
 							else if (advantage < threshold) 
 							{
@@ -395,14 +394,15 @@ int main() {
 					
 					//double ref_accel = gain*(kp * error + ki*integral_term + kd*differential);
 					double ref_accel;
+					prev_ref_accel = ref_accel;
 					double max_accel = 1.5;
-					double max_decel = 1;
-					double max_jerk = 1;
+					double max_decel = 1.5;
+					double max_jerk = 8;
 					// 3 State Machine - Accelerate, Decelerate, Keep Speed
 					if (no_lane_change_counter != 0) {
-						max_accel *= (1 - no_lane_change_counter / 150.0);
-						max_jerk *= (1 - no_lane_change_counter / 150.0);
-						max_decel *= (1 - no_lane_change_counter / 150.0);
+						max_accel *= (1 - no_lane_change_counter / 100.0);
+						max_jerk *= (1 - no_lane_change_counter / 100.0);
+						max_decel *= (1 - no_lane_change_counter / 100.0);
 					}
 
 					if (desired_vel-(ref_vel*2.24) > 0)
@@ -426,6 +426,7 @@ int main() {
 						//Keep current speed
 						ref_accel = 0;
 					}
+
 
 					prev_ref_accel = ref_accel;
 					//ref_vel = car_speed;
@@ -465,14 +466,8 @@ int main() {
 					}
 
 					double next_d = 2+4*lane;
-					double target_x;
-					if (no_lane_change_counter != 0)
-						target_x = 30.0;
-					else
-						target_x = 20.0;
-
 					for (int i = 1; i < 4; ++i) {
-						double next_s = car_s + target_x * i;
+						double next_s = car_s + 30 * i;
 						vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 						ptsx.push_back(next_xy[0]);
 						ptsy.push_back(next_xy[1]);
@@ -499,17 +494,17 @@ int main() {
 						next_y_vals.push_back(previous_path_y[i]);
 					}
 					// Calculate how to break up spline points so that we travel at our desired reference velocity
-					target_x = 5;
+					double target_x = 30.0;
 					double target_y = s(target_x);
 					double target_dist = sqrt(target_x * target_x + target_y * target_y);
 
 					double x_add_on = 0;
 					std::cout << "Calculating points using spline" << std::endl;
-					for (int i = 1; i <= 3 - previous_path_x.size(); ++i)
+					for (int i = 1; i <= 5 - previous_path_x.size(); ++i)
 					{
 						if (no_lane_change_counter > 0)
 							no_lane_change_counter -= 1;
-						ref_vel = ref_vel + ref_accel * 0.02; // WORK *i
+						ref_vel = ref_vel + ref_accel * 0.02*i;
 						if (ref_accel > 0 && ref_vel > (desired_vel/2.24))
 						{
 							ref_vel = (desired_vel/2.24);
@@ -539,7 +534,7 @@ int main() {
 						next_y_vals.push_back(y_point);
 					}
 					std::cout << "Calculated points using spline" << std::endl;
-					//usleep(100000);
+
 					msgJson["next_x"] = next_x_vals;
 					msgJson["next_y"] = next_y_vals;
 
