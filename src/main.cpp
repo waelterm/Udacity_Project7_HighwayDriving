@@ -402,8 +402,8 @@ int main() {
 							++cntr;
 						}
 					}
-					std::cout << "lane " << lane << std::endl;
-					std::cout << std::endl;
+					//std::cout << "lane " << lane << std::endl;
+					//std::cout << std::endl;
 
 					// Calculating reference acceleration
 					double ref_accel;
@@ -544,7 +544,7 @@ int main() {
 						next_x_vals.push_back(x_point);
 						next_y_vals.push_back(y_point);
 					}
-					std::cout << "Calculated points using spline" << std::endl;
+					//std::cout << "Calculated points using spline" << std::endl;
 
 					msgJson["next_x"] = next_x_vals;
 					msgJson["next_y"] = next_y_vals;
